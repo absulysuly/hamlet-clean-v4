@@ -1,22 +1,21 @@
-# Dockerfile
+FROM node:18-alpine
 
-# Use an official Node.js runtime as a parent image
-FROM node:14
+RUN apk add --no-cache openssl
 
-# Set the working directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy package.json and package-lock.json files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --production=false
+RUN npm install
 
-# Bundle app source
+COPY prisma ./prisma/
+
+RUN npx prisma generate
+
 COPY . .
 
-# Expose port
-EXPOSE 8080
+RUN npm run build
 
-# Define the command to run the app
-CMD [ "node", "server.js" ]
+EXPOSE 3001
+
+CMD ["npm", "start"]
