@@ -3,90 +3,88 @@ import https from 'https';
 
 const prisma = new PrismaClient();
 
-interface CandidateCSVRow {
-  ElectionNumber: string;
-  Name_English: string;
-  Name_Original: string;
-  City: string;
-}
+// GitHub raw URL for the bilingual candidate CSV
+const CSV_URL = 'https://raw.githubusercontent.com/absulysuly/hamlet-unified-complete-2027/main/data/master_candidates_bilingual_2025-10-14_23-19-46.csv';
 
-async function fetchCSVData(): Promise<string> {
+async function fetchCSV(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    const url = 'https://raw.githubusercontent.com/absulysuly/hamlet-unified-complete-2027/main/data/master_candidates_bilingual_2025-10-14_23-19-46.csv';
-    
-    https.get(url, (response) => {
+    https.get(url, (res) => {
       let data = '';
-      response.on('data', (chunk) => data += chunk);
-      response.on('end', () => resolve(data));
-      response.on('error', reject);
+      res.on('data', (chunk) => data += chunk);
+      res.on('end', () => resolve(data));
+      res.on('error', reject);
     });
   });
 }
 
-function parseCSV(csvData: string): CandidateCSVRow[] {
-  const lines = csvData.split('\n');
-  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-  const rows: CandidateCSVRow[] = [];
-
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-
-    const values = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g);
-    if (!values || values.length < 4) continue;
-
-    const row: any = {};
+function parseCSV(csvContent: string): any[] {
+  const lines = csvContent.split('\n').filter(line => line.trim());
+  const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+  
+  return lines.slice(1).map(line => {
+    const values = line.split(',').map(v => v.replace(/"/g, '').trim());
+    const obj: any = {};
     headers.forEach((header, index) => {
-      row[header] = values[index]?.replace(/^"|"$/g, '').trim() || '';
+      obj[header] = values[index] || '';
     });
-
-    if (row.ElectionNumber && row.Name_English) {
-      rows.push(row as CandidateCSVRow);
-    }
-  }
-
-  return rows;
+    return obj;
+  });
 }
 
 async function main() {
-  console.log('🌙 Starting candidate import...');
+  console.log('🌙 Starting candidate import from bilingual CSV...');
   
   try {
-    const csvData = await fetchCSVData();
+    // Fetch CSV data
+    console.log('📥 Fetching CSV data from GitHub...');
+    const csvContent = await fetchCSV(CSV_URL);
     console.log('✅ CSV data fetched');
-
-    const candidates = parseCSV(csvData);
-    console.log(`✅ Parsed ${candidates.length} candidates`);
-
+    
+    // Parse CSV
+    const records = parseCSV(csvContent);
+    console.log(`✅ Parsed ${records.length} candidates`);
+    
+    // Clear existing candidates
+    console.log('🗑️ Clearing existing candidates...');
     await prisma.candidate.deleteMany({});
     console.log('✅ Database cleared');
-
-    let imported = 0;
-    for (const candidate of candidates) {
-      try {
-        await prisma.candidate.create({
-          data: {
-            name: candidate.Name_English || candidate.Name_Original,
-            governorate: candidate.City || 'Unknown',
-            listNumber: parseInt(candidate.ElectionNumber) || null,
-            biography: `Original: ${candidate.Name_Original}`,
-            votes: 0,
-          },
-        });
-        imported++;
-        if (imported % 500 === 0) console.log(`  ⏳ ${imported} imported...`);
-      } catch (error) {
-        console.error(`Failed: ${candidate.ElectionNumber}`);
+    
+    // Import candidates
+    console.log('📊 Importing candidates...');
+    let count = 0;
+    
+    for (const row of records) {
+      await prisma.candidate.create({
+        data: {
+          name: row.Name_English || row.Name_Original || 'Unknown',
+          nameOriginal: row.Name_Original,
+          governorate: row.City || 'Unknown',
+          listNumber: parseInt(row.ElectionNumber) || null,
+          votes: 0,
+        },
+      });
+      
+      count++;
+      if (count % 500 === 0) {
+        console.log(`  ⏳ ${count} imported...`);
       }
     }
-
-    console.log(`\n🎉 Imported ${imported} candidates!`);
+    
+    console.log(`🎉 Successfully imported ${count} candidates!`);
+    
+    // Show sample
+    const sample = await prisma.candidate.findMany({ take: 3 });
+    console.log('\n📋 Sample candidates:');
+    sample.forEach(c => console.log(`  - ${c.name} (${c.nameOriginal}) - ${c.governorate}`));
+    
   } catch (error) {
     console.error('❌ Import failed:', error);
-    process.exit(1);
-  } finally {
-    await prisma.$disconnect();
+    throw error;
   }
 }
 
-main();
+main()
+  .catch(console.error)
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
