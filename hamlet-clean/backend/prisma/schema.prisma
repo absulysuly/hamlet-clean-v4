@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Candidate {
+  id          Int      @id @default(autoincrement())
+  name        String
+  governorate String
+  alliance    String?
+  biography   String?  @db.Text
+  listNumber  Int?     @map("list_number")
+  photoUrl    String?  @map("photo_url")
+  votes       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([governorate])
+  @@index([alliance])
+  @@index([name])
+  @@map("candidates")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("observer")
+  governorate  String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([email])
+  @@index([username])
+  @@map("users")
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?  @db.Text
+  governorate String?
+  eventDate   DateTime @map("event_date")
+  reportedBy  Int?     @map("reported_by")
+  status      String   @default("pending")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([governorate])
+  @@index([eventDate])
+  @@map("events")
+}
+
+model Governorate {
+  id              Int      @id @default(autoincrement())
+  nameEn          String   @unique @map("name_en")
+  nameAr          String   @map("name_ar")
+  nameKu          String   @map("name_ku")
+  candidateCount  Int      @default(0) @map("candidate_count")
+  population      Int?
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("governorates")
+}
