@@ -4,6 +4,7 @@ import * as candidatesController from '../controllers/candidates';
 import * as governoratesController from '../controllers/governorates';
 import * as usersController from '../controllers/users';
 import * as eventsController from '../controllers/events';
+import * as adminController from '../controllers/admin';
 
 const router = Router();
 
@@ -24,5 +25,8 @@ router.get('/users', usersController.getAllUsers);
 
 // Events
 router.get('/events', eventsController.getAllEvents);
+
+// Admin - One-click import (visit this URL to import all 7,769 candidates)
+router.get('/admin/import-candidates', adminController.importCandidates);
 
 export default router;
