@@ -1,7 +1,8 @@
-[build]
-root = "backend"
-buildCommand = "npm install"
+# Railway Monorepo Configuration
+# This file helps Railway detect the monorepo structure
 
-[deploy]
-startCommand = "npm start"
-healthcheckPath = "/health"
+[build]
+builder = "NIXPACKS"
+
+# Backend service should use hamlet-clean/backend as root
+# Frontend service should use hamlet-clean/frontend as root
