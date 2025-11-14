@@ -1,25 +1,22 @@
-FROM node:18-alpine AS builder
+# Dockerfile
 
-WORKDIR /app
+# Use an official Node.js runtime as a parent image
+FROM node:14
 
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json files
 COPY package*.json ./
-COPY prisma ./prisma/
 
-RUN npm ci
-RUN npx prisma generate
+# Install dependencies
+RUN npm install --production=false
 
+# Bundle app source
 COPY . .
-RUN npm run build
 
-FROM node:18-alpine
+# Expose port
+EXPOSE 8080
 
-WORKDIR /app
-
-COPY package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-
-EXPOSE 3001
-
-CMD ["npm", "start"]
+# Define the command to run the app
+CMD [ "node", "server.js" ]
