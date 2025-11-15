@@ -1,2 +1,2 @@
-trigger: 2025-11-15T09:01:22Z by @absulysuly
-This file forces Railway to pick up the latest commit and redeploy.
+trigger: 2025-11-15T09:26:10Z by @absulysuly
+Force redeploy to Railway
