@@ -38,7 +38,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Container System */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -46,7 +45,6 @@ body {
   width: 100%;
 }
 
-/* Header Restoration */
 .header {
   background: rgba(30, 41, 59, 0.95);
   backdrop-filter: blur(20px);
@@ -79,7 +77,6 @@ body {
   background-clip: text;
 }
 
-/* Candidate Grid Restoration */
 .candidates-grid {
   display: grid;
   gap: 1.5rem;
@@ -120,7 +117,6 @@ body {
   transform: scaleX(1);
 }
 
-/* Arabic Text Styling */
 .arabic-name {
   font-size: 1.4rem;
   color: var(--secondary);
@@ -148,7 +144,6 @@ body {
   border: 1px solid var(--border);
 }
 
-/* Loading States */
 .loading {
   text-align: center;
   padding: 4rem 2rem;
@@ -166,15 +161,10 @@ body {
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-/* Error States */
 .error {
   background: var(--error);
   color: white;
@@ -189,86 +179,15 @@ body {
   font-size: 1.2rem;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-  }
-
-  .candidates-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .header {
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .header h1 {
-    font-size: 2rem;
-  }
-
-  .candidate-card {
-    padding: 1.5rem;
-  }
+  .container { padding: 1rem; }
+  .candidates-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .header { padding: 1.5rem; margin-bottom: 1.5rem; }
+  .header h1 { font-size: 2rem; }
+  .candidate-card { padding: 1.5rem; }
 }
 
 @media (max-width: 480px) {
-  .header h1 {
-    font-size: 1.75rem;
-  }
-
-  .container {
-    padding: 0.75rem;
-  }
-}
-
-/* Utility Classes */
-.text-center {
-  text-align: center;
-}
-
-.text-right {
-  text-align: right;
-}
-
-.mt-1 {
-  margin-top: 0.5rem;
-}
-
-.mt-2 {
-  margin-top: 1rem;
-}
-
-.mb-1 {
-  margin-bottom: 0.5rem;
-}
-
-.mb-2 {
-  margin-bottom: 1rem;
-}
-
-.p-1 {
-  padding: 0.5rem;
-}
-
-.p-2 {
-  padding: 1rem;
-}
-
-/* Focus States for Accessibility */
-button:focus-visible,
-a:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-/* Reduced Motion Support */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+  .header h1 { font-size: 1.75rem; }
+  .container { padding: 0.75rem; }
 }
