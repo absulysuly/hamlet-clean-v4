@@ -1,0 +1,9 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "cd hamlet-clean/frontend && npm install && npm run build"
+
+[start]
+startCommand = "cd hamlet-clean/frontend && npm start"
+
+[deploy]
+healthcheckPath = "/"
