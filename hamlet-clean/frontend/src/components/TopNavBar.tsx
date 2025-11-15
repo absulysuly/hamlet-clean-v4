@@ -1,33 +1,63 @@
+'use client';
+
 import Link from 'next/link';
 
-type NavigationLink = {
-  href: string;
-  label: string;
-};
-
-const navigationLinks: ReadonlyArray<NavigationLink> = [
+const navigationLinks = [
   { href: '/', label: 'Home' },
   { href: '/candidates', label: 'Candidates' },
 ];
 
 export default function TopNavBar() {
   return (
-    <header className="bg-white shadow-sm">
-      <div className="container mx-auto flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
+    <header className="header">
+      <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
+          <p style={{
+            textTransform: 'uppercase',
+            letterSpacing: '0.18em',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            color: 'var(--text-secondary)',
+          }}>
             Hamlet Unified Platform
           </p>
-          <h1 className="text-2xl font-bold text-gray-900">Iraq Election Dashboard</h1>
-          <p className="text-sm text-gray-600">Realtime civic intelligence for 2025</p>
+          <h1>Iraq Election Dashboard</h1>
+          <p style={{
+            color: 'var(--text-secondary)',
+            fontSize: '0.95rem',
+            marginTop: '0.5rem',
+          }}>
+            Realtime civic intelligence for 2025
+          </p>
         </div>
 
-        <nav aria-label="Primary" className="flex items-center gap-2 md:gap-4">
+        <nav aria-label="Primary" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
           {navigationLinks.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className="rounded-full px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-blue-50 hover:text-blue-700"
+              style={{
+                borderRadius: '999px',
+                padding: '0.65rem 1.4rem',
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                letterSpacing: '0.02em',
+                color: 'var(--text-secondary)',
+                textDecoration: 'none',
+                background: 'rgba(15, 23, 42, 0.4)',
+                border: '1px solid rgba(148, 163, 184, 0.25)',
+                transition: 'all 0.25s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(96, 165, 250, 0.18)';
+                e.currentTarget.style.color = 'var(--text)';
+                e.currentTarget.style.borderColor = 'rgba(96, 165, 250, 0.45)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(15, 23, 42, 0.4)';
+                e.currentTarget.style.color = 'var(--text-secondary)';
+                e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.25)';
+              }}
             >
               {label}
             </Link>

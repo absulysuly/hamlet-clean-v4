@@ -1,40 +1,53 @@
 import { Candidate } from '@/types';
 
-interface CandidateCardProps {
+interface Props {
   candidate: Candidate;
 }
 
-export default function CandidateCard({ candidate }: CandidateCardProps) {
+export default function CandidateCard({ candidate }: Props) {
+  const { name, nameOriginal, governorate, alliance, listNumber, votes, biography } = candidate;
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">
-        {candidate.name}
-      </h3>
-      <div className="space-y-2">
-        <p className="text-sm text-gray-600">
-          <span className="font-medium">Governorate:</span> {candidate.governorate}
-        </p>
-        {candidate.alliance && (
-          <p className="text-sm text-gray-600">
-            <span className="font-medium">Alliance:</span> {candidate.alliance}
-          </p>
+    <article className="candidate-card">
+      {nameOriginal && <h3 className="arabic-name">{nameOriginal}</h3>}
+      <p className="english-name">{name}</p>
+      <p className="governorate">{governorate}</p>
+
+      <dl style={{ marginTop: '1.5rem', display: 'grid', rowGap: '0.75rem' }}>
+        {alliance && (
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'baseline' }}>
+            <dt style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Alliance</dt>
+            <dd style={{ fontWeight: 600 }}>{alliance}</dd>
+          </div>
         )}
-        {candidate.listNumber && (
-          <p className="text-sm text-gray-600">
-            <span className="font-medium">List #:</span> {candidate.listNumber}
-          </p>
+
+        {typeof listNumber === 'number' && (
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'baseline' }}>
+            <dt style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>List #</dt>
+            <dd style={{ fontWeight: 600 }}>{listNumber}</dd>
+          </div>
         )}
-        {candidate.votes > 0 && (
-          <p className="text-sm text-gray-600">
-            <span className="font-medium">Votes:</span> {candidate.votes.toLocaleString()}
-          </p>
+
+        {votes > 0 && (
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'baseline' }}>
+            <dt style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Votes</dt>
+            <dd style={{ fontWeight: 600 }}>{votes.toLocaleString()}</dd>
+          </div>
         )}
-      </div>
-      {candidate.biography && (
-        <p className="mt-4 text-sm text-gray-700 line-clamp-3">
-          {candidate.biography}
+      </dl>
+
+      {biography && (
+        <p style={{
+          marginTop: '1.5rem',
+          color: 'var(--text-secondary)',
+          fontSize: '0.95rem',
+          lineHeight: 1.7,
+          maxHeight: '7.2rem',
+          overflow: 'hidden',
+        }}>
+          {biography}
         </p>
       )}
-    </div>
+    </article>
   );
 }
