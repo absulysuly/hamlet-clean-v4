@@ -1,6 +1,7 @@
 export interface Candidate {
   id: number;
   name: string;
+  nameOriginal: string | null;
   governorate: string;
   alliance: string | null;
   biography: string | null;
