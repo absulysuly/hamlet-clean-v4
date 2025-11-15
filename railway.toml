@@ -3,6 +3,7 @@
 
 [build]
 builder = "NIXPACKS"
+root = "hamlet-clean/backend"
 
 # Backend service should use hamlet-clean/backend as root
 # Frontend service should use hamlet-clean/frontend as root
