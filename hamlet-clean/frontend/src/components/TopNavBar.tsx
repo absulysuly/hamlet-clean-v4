@@ -1,6 +1,11 @@
 import Link from 'next/link';
 
-const navigationLinks: Array<{ href: string; label: string }> = [
+type NavigationLink = {
+  href: string;
+  label: string;
+};
+
+const navigationLinks: ReadonlyArray<NavigationLink> = [
   { href: '/', label: 'Home' },
   { href: '/candidates', label: 'Candidates' },
 ];
