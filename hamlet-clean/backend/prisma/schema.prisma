@@ -10,6 +10,7 @@ datasource db {
 model Candidate {
   id          Int      @id @default(autoincrement())
   name        String
+  nameOriginal String?
   governorate String
   alliance    String?
   biography   String?  @db.Text
