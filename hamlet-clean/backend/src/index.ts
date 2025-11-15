@@ -1,7 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
-import { corsMiddleware } from './middleware/cors';
+import cors from 'cors';
+import { corsOptions } from './middleware/cors';
 import { errorHandler } from './middleware/error';
 import routes from './routes';
 
@@ -14,7 +15,8 @@ const PORT = process.env.PORT || 3001;
 app.use(helmet());
 
 // CORS
-app.use(corsMiddleware);
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Body parsing
 app.use(express.json());

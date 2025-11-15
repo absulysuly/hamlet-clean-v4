@@ -1,23 +1,37 @@
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [
+const explicitOrigins = [
+  'https://hamlet-clean-v4-vpnz.vercel.app',
+  'https://hamlet-clean-v4-vpnz-git-main-absulysulys-projects.vercel.app',
+  'https://hamlet-clean-v4-vpnz-e655kq3oc-absulysulys-projects.vercel.app',
   'http://localhost:3000',
   'http://localhost:5173',
-  'https://hamlet-unified.vercel.app'
 ];
 
-export const corsMiddleware = cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('⚠️  CORS blocked origin:', origin);
-      callback(null, true); // Allow anyway for now
+const originPatterns = [/^https:\/\/hamlet-clean-v4-vpnz-[^.]+\.vercel\.app$/];
+
+const normalizeOrigin = (origin: string) => origin.replace(/\/$/, '');
+
+export const corsOptions: CorsOptions = {
+  origin(origin, callback) {
+    if (!origin) {
+      return callback(null, true);
     }
+
+    const normalizedOrigin = normalizeOrigin(origin);
+    const isExplicitlyAllowed = explicitOrigins.includes(normalizedOrigin);
+    const matchesPattern = originPatterns.some((pattern) => pattern.test(normalizedOrigin));
+
+    if (isExplicitlyAllowed || matchesPattern) {
+      return callback(null, true);
+    }
+
+    console.warn(`⚠️  CORS blocked origin: ${origin}`);
+    return callback(null, false);
   },
   credentials: true,
-  optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-});
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
+
+export const corsMiddleware = cors(corsOptions);

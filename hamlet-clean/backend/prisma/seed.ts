@@ -1,35 +1,41 @@
 import { PrismaClient } from '@prisma/client';
-import fs from 'fs';
-import csv from 'csv-parser';
+import { ArabicCSVImporter } from '../src/utils/arabicCSV';
 
 const prisma = new PrismaClient();
 
 async function main() {
-    const candidates = [];
-    
-    // Read CSV file
-    fs.createReadStream('ElectionCandidates_Original.csv')
-        .pipe(csv({ encoding: 'utf-8' }))
-        .on('data', (row) => {
-            // Assuming the CSV has columns name_ar, name_en, and other relevant fields
-            candidates.push({
-                nameAr: row.name_ar,
-                nameEn: row.name_en,
-                // Map other fields accordingly
-            });
-        })
-        .on('end', async () => {
-            // Save to database
-            await prisma.candidate.createMany({ data: candidates });
-            console.log('Candidates imported successfully.');
-        });
+  console.log('🌱 Starting database seeding with Arabic support...');
+
+  try {
+    const records = await ArabicCSVImporter.importFromGitHub();
+    const candidates = ArabicCSVImporter.normalizeRecords(records);
+
+    if (candidates.length === 0) {
+      console.warn('⚠️  No candidates parsed from CSV. Seeding skipped.');
+      return;
+    }
+
+    console.log(`📥 Preparing to seed ${candidates.length} candidates...`);
+
+    await prisma.$transaction(async (tx) => {
+      await tx.candidate.deleteMany();
+      await tx.candidate.createMany({
+        data: candidates,
+      });
+    });
+
+    console.log('✅ Database seeded successfully with Arabic candidates!');
+  } catch (error) {
+    console.error('❌ Seeding failed:', error);
+    throw error;
+  }
 }
 
 main()
-    .catch(e => {
-        console.error(e);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
