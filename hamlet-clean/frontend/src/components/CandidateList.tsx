@@ -8,32 +8,35 @@ export default function CandidateList() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="loading">
+        <div className="loading-spinner" />
+        <p>Loading candidate intelligence…</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-        <p className="text-red-600">Error loading candidates: {error}</p>
+      <div className="error">
+        <h3>Unable to load candidates</h3>
+        <p>{error}</p>
       </div>
     );
   }
 
   if (!candidates || candidates.length === 0) {
     return (
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-        <p className="text-gray-600">No candidates found</p>
+      <div className="error" style={{ background: 'rgba(124, 58, 237, 0.25)', borderLeftColor: '#7c3aed' }}>
+        <h3>No candidates found</h3>
+        <p>Please adjust filters or try again later.</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {candidates.map((candidate) => (
-        <CandidateCard key={candidate.id} candidate={candidate} />
+    <div className="candidates-grid">
+      {candidates.map((c) => (
+        <CandidateCard key={c.id} candidate={c} />
       ))}
     </div>
   );
