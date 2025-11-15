@@ -1,5 +1,35 @@
-// Seed file for Prisma
+import { PrismaClient } from '@prisma/client';
+import fs from 'fs';
+import csv from 'csv-parser';
 
-const CSV_URL = 'https://raw.githubusercontent.com/absulysuly/hamlet-unified-complete-2027/main/data/MASTER_CANDIDATES_7769.csv';
+const prisma = new PrismaClient();
 
-// Other content remains unchanged...
+async function main() {
+    const candidates = [];
+    
+    // Read CSV file
+    fs.createReadStream('ElectionCandidates_Original.csv')
+        .pipe(csv({ encoding: 'utf-8' }))
+        .on('data', (row) => {
+            // Assuming the CSV has columns name_ar, name_en, and other relevant fields
+            candidates.push({
+                nameAr: row.name_ar,
+                nameEn: row.name_en,
+                // Map other fields accordingly
+            });
+        })
+        .on('end', async () => {
+            // Save to database
+            await prisma.candidate.createMany({ data: candidates });
+            console.log('Candidates imported successfully.');
+        });
+}
+
+main()
+    .catch(e => {
+        console.error(e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });
