@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import TopNavBar from '@/components/TopNavBar';
 import { api } from '@/lib/api';
 import { Candidate } from '@/types';
-import Link from 'next/link';
 
 export default function CandidatesPage() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -36,10 +37,13 @@ export default function CandidatesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading candidates...</p>
+      <div className="min-h-screen bg-gray-50">
+        <TopNavBar />
+        <div className="flex items-center justify-center py-24">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
+            <p className="mt-4 text-gray-600">Loading candidates...</p>
+          </div>
         </div>
       </div>
     );
@@ -47,16 +51,19 @@ export default function CandidatesPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md">
-          <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
-          <p className="text-gray-700">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Retry
-          </button>
+      <div className="min-h-screen bg-gray-50">
+        <TopNavBar />
+        <div className="flex items-center justify-center py-24">
+          <div className="max-w-md rounded-lg bg-white p-8 shadow-lg">
+            <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
+            <p className="text-gray-700">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+            >
+              Retry
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -64,55 +71,54 @@ export default function CandidatesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <TopNavBar />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Candidates</h1>
+          <h1 className="mb-2 text-4xl font-bold text-gray-900">Candidates</h1>
           <p className="text-gray-600">
             Browse all {total.toLocaleString()} candidates for the Iraqi Provincial Council Elections 2025
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {candidates.map((candidate) => (
             <Link
               key={candidate.id}
               href={`/candidates/${candidate.id}`}
-              className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-shadow"
+              className="rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-xl"
             >
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-gray-900 mb-1">
-                  {candidate.name}
-                </h3>
+                <h3 className="mb-1 text-xl font-bold text-gray-900">{candidate.name}</h3>
                 {candidate.nameOriginal && (
-                  <p className="text-lg text-gray-600 font-arabic" dir="rtl">
+                  <p className="font-arabic text-lg text-gray-600" dir="rtl">
                     {candidate.nameOriginal}
                   </p>
                 )}
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center text-sm">
-                  <span className="font-semibold text-gray-700 w-24">Governorate:</span>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center">
+                  <span className="w-24 font-semibold text-gray-700">Governorate:</span>
                   <span className="text-gray-600">{candidate.governorate}</span>
                 </div>
 
                 {candidate.listNumber && (
-                  <div className="flex items-center text-sm">
-                    <span className="font-semibold text-gray-700 w-24">List:</span>
+                  <div className="flex items-center">
+                    <span className="w-24 font-semibold text-gray-700">List:</span>
                     <span className="text-gray-600">#{candidate.listNumber}</span>
                   </div>
                 )}
 
                 {candidate.alliance && (
-                  <div className="flex items-center text-sm">
-                    <span className="font-semibold text-gray-700 w-24">Alliance:</span>
+                  <div className="flex items-center">
+                    <span className="w-24 font-semibold text-gray-700">Alliance:</span>
                     <span className="text-gray-600">{candidate.alliance}</span>
                   </div>
                 )}
               </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <span className="text-blue-600 text-sm font-semibold hover:text-blue-800">
+              <div className="mt-4 border-t border-gray-200 pt-4">
+                <span className="text-sm font-semibold text-blue-600 transition-colors hover:text-blue-800">
                   View Details →
                 </span>
               </div>
@@ -121,26 +127,24 @@ export default function CandidatesPage() {
         </div>
 
         {candidates.length === 0 && (
-          <div className="text-center py-12">
+          <div className="py-12 text-center">
             <p className="text-gray-600">No candidates found.</p>
           </div>
         )}
 
         <div className="mt-8 flex justify-center gap-4">
           <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
+            onClick={() => setPage((value) => Math.max(1, value - 1))}
             disabled={page === 1}
-            className="px-6 py-2 bg-blue-600 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700"
+            className="rounded bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
           >
             Previous
           </button>
-          <span className="px-6 py-2 bg-gray-100 rounded">
-            Page {page}
-          </span>
+          <span className="rounded bg-gray-100 px-6 py-2">Page {page}</span>
           <button
-            onClick={() => setPage(p => p + 1)}
+            onClick={() => setPage((value) => value + 1)}
             disabled={candidates.length < 50}
-            className="px-6 py-2 bg-blue-600 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700"
+            className="rounded bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
           >
             Next
           </button>
